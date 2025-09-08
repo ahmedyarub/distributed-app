@@ -8,3 +8,5 @@ This category of errors is easily detected by static-analysers that can do cross
 
 Meanwhile, the microservice **caller-service** exposes the endpoint http://localhost:8080/web_call/{param}. This endpoint calls responder-service, which means that it is also vulnerable to XSS attacks since the response of responder-service, vulnerable to XSS attacks, is returned as is.
 ![issue.png](issue.png)
+
+Fore details about XSS vulnerabilities, please refer to [Using CodeQL to detect client-side vulnerabilities in web applications](https://raz0r.name/articles/using-codeql-to-detect-client-side-vulnerabilities-in-web-applications/)
