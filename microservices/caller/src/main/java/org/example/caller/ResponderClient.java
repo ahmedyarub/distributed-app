@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "responder", url = "http://localhost:8081", path = "/responder")
 public interface ResponderClient {
-    @GetMapping("/lower/{param}")
-    String convertLower(@PathVariable String param);
+    @GetMapping("/annotation/lower/{param}")
+    String annotationConvertLower(@PathVariable String param);
+
+    @GetMapping("/router/lower/{param}")
+    String routerConvertLower(@PathVariable String param);
 }

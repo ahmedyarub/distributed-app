@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.example.responder.Util.utilToLower;
 
 @RestController
-public class StringController {
-    @GetMapping("/lower/{param}")
-    public String convertLower(@PathVariable String param) {
+public class AnnotationController {
+    @GetMapping("/annotation/lower/{param}")
+    public String annotationConvertLower(@PathVariable String param) {
         return utilToLower(param);
     }
 }

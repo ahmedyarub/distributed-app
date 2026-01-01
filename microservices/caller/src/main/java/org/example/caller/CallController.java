@@ -12,8 +12,13 @@ public class CallController {
         this.responderClient = responderClient;
     }
 
-    @GetMapping("/web_call/{param}")
-    public String webCall(@PathVariable String param) {
-        return responderClient.convertLower(param);
+    @GetMapping("/web_call_annotation/{param}")
+    public String webCallToAnnotation(@PathVariable String param) {
+        return responderClient.annotationConvertLower(param);
+    }
+
+    @GetMapping("/web_call_router/{param}")
+    public String webCallToRouter(@PathVariable String param) {
+        return responderClient.routerConvertLower(param);
     }
 }
