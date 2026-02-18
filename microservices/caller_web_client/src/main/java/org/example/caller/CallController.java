@@ -10,13 +10,13 @@ public class CallController {
     private final WebClient webClient;
 
     public CallController() {
-        this.webClient = WebClient.builder().baseUrl("http://localhost:9082/responder_webflux").build();
+        this.webClient = WebClient.builder().baseUrl("http://localhost:9082").build();
     }
 
     @GetMapping("/web_client_annotation/{param}")
     public String webClientToAnnotation(@PathVariable String param) {
         return webClient.get()
-                .uri("/annotation/lower/{param}", param)
+                .uri("/responder_webflux/annotation/lower/{param}", param)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
