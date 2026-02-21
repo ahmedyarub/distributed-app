@@ -1,5 +1,6 @@
 package org.example.caller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,8 +10,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class CallController {
     private final WebClient webClient;
 
-    public CallController() {
-        this.webClient = WebClient.builder().baseUrl("http://localhost:9082").build();
+    public CallController(@Value("${responder.url}") String responderUrl) {
+        this.webClient = WebClient.builder().baseUrl(responderUrl).build();
     }
 
     @GetMapping("/web_client_annotation/{param}")
