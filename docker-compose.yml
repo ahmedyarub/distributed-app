@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # Responders (Internal only)
+  responder-annotation:
+    build:
+      context: microservices/responder_mvc_annotation
+    networks:
+      - internal-net
+
+  responder-router:
+    build:
+      context: microservices/responder_mvc_router
+    networks:
+      - internal-net
+
+  responder-webflux:
+    build:
+      context: microservices/responder_webflux
+    networks:
+      - internal-net
+
+  # Callers (Internal only, exposed via Nginx)
+  caller-feign:
+    build:
+      context: microservices/caller_feign_client
+    environment:
+      - RESPONDER_URL=http://responder-annotation:9080
+    depends_on:
+      - responder-annotation
+    networks:
+      - internal-net
+
+  caller-rest:
+    build:
+      context: microservices/caller_rest_template
+    environment:
+      - RESPONDER_URL=http://responder-router:9081
+    depends_on:
+      - responder-router
+    networks:
+      - internal-net
+
+  caller-web:
+    build:
+      context: microservices/caller_web_client
+    environment:
+      - RESPONDER_URL=http://responder-webflux:9082
+    depends_on:
+      - responder-webflux
+    networks:
+      - internal-net
+
+  # Nginx (Public entry point)
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./microservices/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - caller-feign
+      - caller-rest
+      - caller-web
+    networks:
+      - internal-net
+
+networks:
+  internal-net:
+    driver: bridge
