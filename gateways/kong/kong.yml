@@ -1,0 +1,91 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: caller-feign-service
+    url: http://caller-feign:8080
+    routes:
+      - name: caller-feign-route
+        paths:
+          - /caller_feign_client
+        strip_path: false
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 10
+          policy: local
+
+  - name: caller-rest-service
+    url: http://caller-rest:8081
+    routes:
+      - name: caller-rest-route
+        paths:
+          - /caller_rest_template
+        strip_path: false
+    plugins:
+      - name: proxy-cache
+        config:
+          content_type:
+            - "text/plain;charset=utf-8"
+          cache_ttl: 300
+          strategy: memory
+
+  - name: caller-web-service
+    url: http://caller-web:8082
+    routes:
+      - name: caller-web-route
+        paths:
+          - /caller_web_client
+        strip_path: false
+    plugins:
+      - name: response-transformer
+        config:
+          add:
+            headers:
+              - "x-kong-transformed: true"
+
+# Global Plugins
+plugins:
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Version
+        - Content-Length
+        - Content-MD5
+        - Content-Type
+        - Date
+        - apikey
+      exposed_headers:
+        - x-kong-transformed
+        - Kong-Request-ID
+        - X-Cache-Status
+      credentials: true
+      max_age: 3600
+  - name: key-auth
+    config:
+      key_names:
+        - apikey
+  - name: correlation-id
+    config:
+      header_name: Kong-Request-ID
+      generator: uuid
+      echo_downstream: true
+  - name: file-log
+    config:
+      path: /tmp/kong.log
+
+consumers:
+  - username: test_user
+
+keyauth_credentials:
+  - consumer: test_user
+    key: secret-api-key-123
